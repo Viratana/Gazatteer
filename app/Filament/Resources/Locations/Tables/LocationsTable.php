@@ -2,11 +2,15 @@
 
 namespace App\Filament\Resources\Locations\Tables;
 
+use Filament\Actions\Action;
+use Filament\Actions\ActionGroup;
 use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ForceDeleteBulkAction;
 use Filament\Actions\RestoreBulkAction;
+use Filament\Actions\ViewAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Table;
@@ -18,12 +22,32 @@ class LocationsTable
         return $table
             ->columns([
                 TextColumn::make('locationType.name')
-                    ->numeric()
-                    ->sortable(),
+                    ->label('Location Type')
+                    ->sortable()
+                    ->searchable(),
+                TextColumn::make('postal_code')
+                    ->label('Postal Code')
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('code')
+                    ->label('Code')
+                    ->alignment('center')
+                    ->searchable(),
+                TextColumn::make('LocationNames.name_kh')
+                    ->label('NameKH')
+                    ->searchable(),
+                TextColumn::make('LocationNames.name_en')
+                    ->label('NameEN')
+                    ->searchable(),
                 TextColumn::make('coordination')
-                    ->searchable(),
+                    ->label('Coordination'),
+                TextColumn::make('reference')
+                    ->label('Reference'),
+                TextColumn::make('note')
+                    ->label('Note'),
                 TextColumn::make('created_by')
-                    ->searchable(),
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
@@ -41,7 +65,12 @@ class LocationsTable
                 TrashedFilter::make(),
             ])
             ->recordActions([
-                EditAction::make(),
+                ActionGroup::make([
+                    ViewAction::make(),
+                    EditAction::make(),
+                    DeleteAction::make(),
+                ])         
+                
             ])
             ->toolbarActions([
                 BulkActionGroup::make([

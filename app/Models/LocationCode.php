@@ -5,10 +5,9 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Location extends Model
+class LocationCode extends Model
 {
     use HasFactory, SoftDeletes;
 
@@ -18,15 +17,13 @@ class Location extends Model
      * @var array
      */
     protected $fillable = [
-        'location_type_id',
+        'location_id',
         'parent_id',
         'code',
         'postal_code',
-        'coordination',
-        'name_kh',
-        'name_en',
         'reference',
         'note',
+        'status',
         'created_by',
     ];
 
@@ -39,32 +36,19 @@ class Location extends Model
     {
         return [
             'id' => 'integer',
-            'location_type_id' => 'integer',
+            'location_id' => 'integer',
+            'parent_id' => 'integer',
+            'status' => 'boolean',
         ];
     }
 
-    public function locationType(): BelongsTo
+    public function location(): BelongsTo
     {
-        return $this->belongsTo(LocationType::class, 'location_type_id');
-    }
-
-     public function codes(): HasMany
-    {
-        return $this->hasMany(LocationCode::class);
-    }
-
-    public function locationNames(): HasMany
-    {
-        return $this->hasMany(LocationName::class);
+        return $this->belongsTo(Location::class);
     }
 
     public function parent(): BelongsTo
     {
-        return $this->belongsTo(self::class);
-    }
-
-    public function children(): HasMany
-    {
-        return $this->hasMany(self::class);
+        return $this->belongsTo(Parent::class);
     }
 }
