@@ -22,12 +22,17 @@ use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use UnitEnum;
 
 class LocationTypeResource extends Resource
 {
     protected static ?string $model = LocationType::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::ListBullet;
+
+    protected static ?int $navigationSort = 1;
+
+    protected static string | UnitEnum | null $navigationGroup = 'Location';
 
     protected static ?string $recordTitleAttribute = 'name';
 
@@ -36,9 +41,9 @@ class LocationTypeResource extends Resource
         return $schema
             ->components([
                 TextInput::make('name')
-                    ->required(),
-                TextInput::make('created_by')
-                    ->required(),
+                    ->required()
+                    ->unique(ignoreRecord: true)
+                    ->columnSpanFull(),
             ]);
     }
 
@@ -53,8 +58,7 @@ class LocationTypeResource extends Resource
                     ->searchable(),
                 TextColumn::make('created_at')
                     ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->sortable(),
                 TextColumn::make('updated_at')
                     ->dateTime()
                     ->sortable()

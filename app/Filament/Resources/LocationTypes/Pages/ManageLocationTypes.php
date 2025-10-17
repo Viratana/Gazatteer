@@ -13,7 +13,12 @@ class ManageLocationTypes extends ManageRecords
     protected function getHeaderActions(): array
     {
         return [
-            CreateAction::make(),
+            CreateAction::make()
+                ->mutateDataUsing(function (array $data): array {
+                    $data['created_by'] = auth()->user()->name;
+
+                    return $data;
+                }),
         ];
     }
 }
