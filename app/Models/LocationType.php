@@ -17,9 +17,13 @@ class LocationType extends Model
      * @var array
      */
     protected $fillable = [
+        'id',
         'name',
         'created_by',
+        'created_at',
+        'updated_at',
     ];
+    
 
     /**
      * Get the attributes that should be cast.

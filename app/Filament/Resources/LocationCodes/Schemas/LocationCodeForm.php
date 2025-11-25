@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Filament\Resources\Locations\Schemas;
+namespace App\Filament\Resources\LocationCodes\Schemas;
 
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\Toggle;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Schemas\Components\Grid;
@@ -12,59 +12,13 @@ use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Illuminate\Database\Eloquent\Builder;
 
-class LocationForm
+class LocationCodeForm
 {
     public static function configure(Schema $schema): Schema
     {
         return $schema
             ->components([
-                Section::make()
-                    ->columns(2)
-                    ->columnSpanFull()
-                    ->schema([
-                        Select::make('location_type_id')
-                            ->label('Location Type')
-                            ->relationship('locationType','name', modifyQueryUsing: fn(Builder $query) => $query->orderBy('id', 'asc'))
-                            ->required(),
-                        Select::make('parent.name_kh')
-                            ->label('Parent Location')
-                            ->relationship('parent', 'name_kh', function (Builder $query, $get) {
-                                $locationTypeId = $get('location_type_id');
-                                if ($locationTypeId == 2) {
-                                    $query->where('location_type_id', 1);
-                                } elseif ($locationTypeId == 3) {
-                                    $query->where('location_type_id', 2);
-                                } elseif ($locationTypeId == 4) {
-                                    $query->where('location_type_id', 3);
-                                }
-                            })
-                            ->searchable()
-                            ->nullable()
-                            ->preload(),
-                        Grid::make(3)
-                            ->columnSpanFull()
-                            ->schema([
-                                TextInput::make('code')
-                                    ->required()
-                                    ->columnSpanFull(),
-                            ]),
-                        TextInput::make('name_kh')
-                            ->label('NameKH')
-                            ->required()
-                            ->unique(ignoreRecord: true),
-                        TextInput::make('name_en')
-                            ->label('NameEN')
-                            ->unique(ignoreRecord: true),
-                        TextInput::make('postal_code')
-                            ->label('Postal Code')
-                            ->unique(),
-                        TextInput::make('coordination')
-                            ->unique(),
-                        Textarea::make('reference'),
-                        Textarea::make('note'),
-                        TextInput::make('note_by_checker')
-                            ->columnSpanFull(),
-                    ]),
+                //
             ]);
     }
 
@@ -80,7 +34,7 @@ class LocationForm
                             ->columnSpanFull()
                             ->label('Location Type : '),
                         TextEntry::make('parent.code')
-                            ->label('Parent Code : ')
+                            ->label('Parent Name : ')
                             ->copyable()
                             ->copyMessage('Copied!'),
                         TextEntry::make('parent.name_kh')

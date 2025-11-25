@@ -1,0 +1,32 @@
+<?php
+
+namespace App\Filament\Resources\LocationCodes\Pages;
+
+use App\Filament\Resources\LocationCodes\LocationCodeResource;
+use Filament\Actions\Action;
+use Filament\Actions\EditAction;
+use Filament\Resources\Pages\ViewRecord;
+
+class ViewLocationCode extends ViewRecord
+{
+    protected static string $resource = LocationCodeResource::class;
+
+    protected function getRedirectUrl(): string
+    {
+        return $this->getResource()::getUrl('index');
+    }
+    
+    protected function getHeaderActions(): array
+    {
+        return [
+            // EditAction::make(),
+            Action::make('back')
+                ->label('Back')
+                ->icon('heroicon-m-arrow-uturn-left')
+                ->color('gray')
+                ->outlined()
+                ->url(fn () => LocationCodeResource::getUrl('index')),
+        ];
+    }
+    
+}

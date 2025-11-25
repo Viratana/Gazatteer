@@ -1,40 +1,70 @@
 <?php
 
-namespace App\Filament\Resources\Locations\Tables;
+namespace App\Filament\Resources\LocationNames\Tables;
 
-use App\Filament\Exports\LocationExporter;
-use App\Filament\Imports\LocationImporter;
-use Filament\Actions\Action;
 use Filament\Actions\ActionGroup;
 use Filament\Actions\BulkActionGroup;
-use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
-use Filament\Actions\ExportAction;
-use Filament\Actions\ExportBulkAction;
-use Filament\Actions\ForceDeleteAction;
 use Filament\Actions\ForceDeleteBulkAction;
-use Filament\Actions\ImportAction;
 use Filament\Actions\RestoreBulkAction;
 use Filament\Actions\ViewAction;
-use Filament\Forms\Components\Toggle;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Table;
+use Illuminate\Database\Query\Builder;
 
-class LocationsTable
+class LocationNamesTable
 {
     public static function configure(Table $table): Table
     {
         return $table
             ->columns([
-                TextColumn::make('locationType.name')
+                // TextColumn::make('location.locationType.name')
+                //     ->label('Location Type')
+                //     ->searchable()
+                //     ->sortable(),
+                // TextColumn::make('location.parent.locationNames.name_kh')
+                //     ->label('Parent Name')
+                //     ->searchable(),
+                // TextColumn::make('name_kh')
+                //     ->label('NameKH')
+                //     ->searchable(),
+                // TextColumn::make('name_en')
+                //     ->label('NameEN')
+                //     ->searchable(),
+                // TextColumn::make('coordination')
+                //     ->label('Coordination'),
+                // TextColumn::make('reference')
+                //     ->label('Reference'),
+                // TextColumn::make('note')
+                //     ->label('Note'),
+                // TextColumn::make('note_by_checker')
+                //     ->label('Note By Checker')
+                //     ->toggleable(isToggledHiddenByDefault: true),
+                // TextColumn::make('created_by')
+                //     ->searchable()
+                //     ->toggleable(isToggledHiddenByDefault: true),
+                // TextColumn::make('created_at')
+                //     ->dateTime()
+                //     ->sortable()
+                //     ->toggleable(isToggledHiddenByDefault: true),
+                // TextColumn::make('updated_at')
+                //     ->dateTime()
+                //     ->sortable()
+                //     ->toggleable(isToggledHiddenByDefault: true),
+                // TextColumn::make('deleted_at')
+                //     ->dateTime()
+                //     ->sortable()
+                //     ->toggleable(isToggledHiddenByDefault: true),
+                 TextColumn::make('location.locationType.name')
                     ->label('Location Type')
                     ->sortable()
                     ->searchable(),
                 TextColumn::make('parent.code')
-                    ->label('Parent Code'),
+                    ->label('Parent Code')
+                    ->toggleable(isToggledHiddenByDefault: true),
                     // ->default(function(){
                     //     return 'Hello';
                     // }),
@@ -42,11 +72,10 @@ class LocationsTable
                     ->label('Parent Name')
                     // ->default('—')
                     ->searchable(),
-                TextColumn::make('code')
+                TextColumn::make('Location.code')
                     ->label('Code')
                     ->alignment('center')
-                    ->sortable()
-                    ->searchable(),
+                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('name_kh')
                     ->label('NameKH')
                     ->searchable(),
@@ -55,7 +84,7 @@ class LocationsTable
                     ->searchable(),
                 TextColumn::make('postal_code')
                     ->label('Postal Code')
-                    ->searchable(),
+                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('coordination')
                     ->label('Coordination'),
                 TextColumn::make('reference')
@@ -63,8 +92,7 @@ class LocationsTable
                 TextColumn::make('note')
                     ->label('Note'),
                 TextColumn::make('note_by_checker')
-                    ->label('Note By Checker')
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->label('Note By Checker'),
                 TextColumn::make('created_by')
                     ->searchable()
                     ->toggleable(isToggledHiddenByDefault: true),
@@ -85,34 +113,14 @@ class LocationsTable
                 TrashedFilter::make(),
             ])
             ->recordActions([
-                ActionGroup::make([
-                    EditAction::make(),
-                    ForceDeleteAction::make(),
-                    DeleteAction::make(),
-                ])         
+                ViewAction::make(),
             ])
-            // ->headerActions([
-            //     ImportAction::make()
-            //         ->importer(LocationImporter::class)
-            //         ->icon('heroicon-o-arrow-up-tray')
-            //         ->label('Import')
-            //         ->color('danger'),
-            //     ExportAction::make()
-            //         ->exporter(LocationExporter::class)
-            //         ->icon('heroicon-o-arrow-down-tray')
-            //         ->label('Export')
-            //         ->color('danger'),  
-            // ])
             ->toolbarActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),
                     ForceDeleteBulkAction::make(),
-                    RestoreBulkAction::make()
-                    ]),
-                ExportBulkAction::make()
-                    ->exporter(LocationExporter::class)
-                    ->label('Export Selected')
-                    ->color('danger'),
+                    RestoreBulkAction::make(),
+                ]),
             ]);
     }
 }

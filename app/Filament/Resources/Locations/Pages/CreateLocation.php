@@ -22,29 +22,35 @@ class CreateLocation extends CreateRecord
         return $data;
     }
 
-    protected function handleRecordCreation(array $data): Model
-    {
-        $location = static::getModel()::create($data);
+    // protected function handleRecordCreation(array $data): Model
+    // {
+        
+    //     $location = static::getModel()::create($data);
 
-        $location->codes()->create([
-            'code'          => $data['code'],
-            'postal_code'   => $data['postal_code'],
-            'reference'     => $data['reference'],
-            'coordination'  => $data['coordination'],
-            'note'          => $data['note'],
-            'created_by'    => $data['created_by'],
-        ]);
+    //     $location->codes()->create([
+    //         'code'              => $data['code'],
+    //         'postal_code'       => $data['postal_code'],
+    //         'reference'         => $data['reference'],
+    //         'coordination'      => $data['coordination'],
+    //         'note'              => $data['note'],
+    //         'note_by_checker'   => $data['note_by_checker'],
+    //         'created_by'        => $data['created_by'],
+    //         // 'location_type_id' => $data['location_type_id'], 
+    //     ]);
 
-        $location->locationNames()->create([
-            'name_kh'       => $data['name_kh'],
-            'name_en'       => $data['name_en'],
-            'reference'     => $data['reference'],
-            'coordination'  => $data['coordination'],
-            'note'          => $data['note'],
-            'created_by'    => $data['created_by'],
-        ]);
-        return $location;
-    }
+    //     $location->locationNames()->create([
+    //         // 'location_id'       => $location->id,
+    //         // 'location_type_id' => $location->location_type_id,
+    //         'name_kh'           => $data['name_kh'],
+    //         'name_en'           => $data['name_en'],
+    //         'reference'         => $data['reference'],
+    //         'coordination'      => $data['coordination'],
+    //         'note'              => $data['note'],
+    //         'note_by_checker'   => $data['note_by_checker'],
+    //         'created_by'        => $data['created_by'],
+    //     ]);
+    //     return $location;
+    // }
 }
 
 

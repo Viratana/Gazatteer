@@ -12,11 +12,6 @@ class Location extends Model
 {
     use HasFactory, SoftDeletes;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array
-     */
     protected $fillable = [
         'location_type_id',
         'parent_id',
@@ -27,44 +22,186 @@ class Location extends Model
         'name_en',
         'reference',
         'note',
+        'note_by_checker',
         'created_by',
+        'created_at',
+        'updated_at',
     ];
 
-    /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
-     */
     protected function casts(): array
     {
         return [
-            'id' => 'integer',
+            'code'             => 'string',
+            'parent_id'        => 'integer',
+            'id'               => 'integer',
+            'status'           => 'boolean',
             'location_type_id' => 'integer',
         ];
     }
+
+    /** Normalize code to digits only whenever it is set */
+    // public function setCodeAttribute($value): void
+    // {
+    //     $this->attributes['code'] = $value === null
+    //         ? null
+    //         : preg_replace('/\D+/', '', (string) $value);
+    // }
+
+    protected static function booted(): void
+    {
+        static::saving(function (Location $location) {
+        // Clean numeric only from what user typed
+        $raw = $location->code === null
+            ? null
+            : preg_replace('/\D+/', '', (string) $location->code);
+
+        if ($raw === null || $raw === '') {
+            $location->code = null;
+            return;
+        }
+
+        // Province (no parent) → just pad (01, 02, …)
+        if (empty($location->parent_id)) {
+            $location->code = str_pad($raw, 2, '0', STR_PAD_LEFT);
+            return;
+        }
+
+        // District/child → parent code + child code (0102, 0103, …)
+        $parent = self::find($location->parent_id);
+
+        if ($parent && !empty($parent->code)) {
+            $parentCode = $parent->code;
+            $childCode  = str_pad($raw, 2, '0', STR_PAD_LEFT);
+
+            // Avoid double-prefix if already correct
+            if (substr($location->code, 0, strlen($parentCode)) !== $parentCode) {
+                $location->code = $parentCode . $childCode;
+            }
+        } else {
+            // If something wrong with parent, just use child code
+            $location->code = str_pad($raw, 2, '0', STR_PAD_LEFT);
+        }
+    });
+        // 1) BEFORE save: compute parent_id from code if it's empty or code changed
+        static::saving(function (self $location) {
+            // only recompute when parent_id is empty OR the code changed
+            if ($location->isDirty('code') || empty($location->parent_id)) {
+                $code = $location->code ? preg_replace('/\D+/', '', (string)$location->code) : null;
+                if (!$code) {
+                    $location->parent_id = null;
+                } else {
+                    // Top-level code in your data is 1 digit (e.g., "3").
+                    // If your top-level is 2 digits (e.g., "03"), change "<= 1" to "<= 2".
+                    if (strlen($code) <= 1) {
+                        $location->parent_id = null;
+                    } else {
+                        // Trim 2 digits repeatedly until a parent code exists: 3010101 → 30101 → 301 → 3
+                        $candidate = substr($code, 0, -2);
+                        $parentId  = null;
+                        while (strlen($candidate) >= 1) {
+                            $parentId = self::query()->where('code', $candidate)->value('id');
+                            if ($parentId) {
+                                break;
+                            }
+                            $candidate = substr($candidate, 0, -2);
+                        }
+                        $location->parent_id = $parentId ?: null;
+                    }
+                }
+            }
+        });
+        // 2) AFTER create: keep name/code shadow tables in sync
+        static::created(function (self $location) {
+            LocationName::updateOrCreate(
+                ['location_id' => $location->id],
+                [
+                    'location_type_id' => $location->location_type_id ?? null,
+                    'parent_id'        => $location->parent_id ?? null,
+                    'code'             => $location->code ?? null, 
+                    'name_kh'          => $location->name_kh ?? null,
+                    'name_en'          => $location->name_en ?? null,
+                    'postal_code'      => $location->postal_code ?? null,
+                    'reference'        => $location->reference ?? null,
+                    'coordination'     => $location->coordination ?? null,
+                    'note'             => $location->note ?? null,
+                    'note_by_checker'  => $location->note_by_checker ?? null,
+                    'created_by'       => $location->created_by ?? null,
+                ]
+            );
+            LocationCode::updateOrCreate(
+                ['location_id' => $location->id],
+                [
+                    'location_type_id' => $location->location_type_id ?? null,
+                    'parent_id'        => $location->parent_id ?? null,
+                    'code'             => $location->code ?? null,
+                    'postal_code'      => $location->postal_code ?? null,
+                    'name_kh'          => $location->name_kh ?? null,
+                    'name_en'          => $location->name_en ?? null,
+                    'reference'        => $location->reference ?? null,
+                    'note'             => $location->note ?? null,
+                    'note_by_checker'  => $location->note_by_checker ?? null,
+                    'created_by'       => $location->created_by ?? null,
+                ]
+            );
+        });
+        // 3) AFTER update: keep name/code shadow tables in sync
+        static::updated(function (self $location) {
+            $locationName = LocationName::firstOrNew(['location_id' => $location->id]);
+            $locationName->fill([
+                'location_type_id' => $location->location_type_id ?? null,
+                'parent_id'        => $location->parent_id ?? null,
+                'code'             => $location->code ?? null, 
+                'name_kh'          => $location->name_kh ?? null,
+                'name_en'          => $location->name_en ?? null,
+                'postal_code'      => $location->postal_code ?? null,
+                'reference'        => $location->reference ?? null,
+                'coordination'     => $location->coordination ?? null,
+                'note'             => $location->note ?? null,
+                'note_by_checker'  => $location->note_by_checker ?? null,
+                'created_by'       => $location->created_by ?? null,
+            ])->save();
+
+            $locationCode = LocationCode::firstOrNew(['location_id' => $location->id]);
+            $locationCode->fill([
+                'location_type_id' => $location->location_type_id ?? null,
+                'parent_id'        => $location->parent_id ?? null,
+                'code'             => $location->code ?? null,
+                'postal_code'      => $location->postal_code ?? null,
+                'name_kh'          => $location->name_kh ?? null,
+                'name_en'          => $location->name_en ?? null,
+                'reference'        => $location->reference ?? null,
+                'note'             => $location->note ?? null,
+                'note_by_checker'  => $location->note_by_checker ?? null,
+                'created_by'       => $location->created_by ?? null,
+            ])->save();
+        });
+    }
+    
 
     public function locationType(): BelongsTo
     {
         return $this->belongsTo(LocationType::class, 'location_type_id');
     }
 
-     public function codes(): HasMany
+    public function codes(): HasMany
     {
         return $this->hasMany(LocationCode::class);
     }
 
-    public function locationNames(): HasMany
+    public function locationNames()
     {
-        return $this->hasMany(LocationName::class);
+        return $this->hasMany(LocationName::class, 'location_id');
     }
 
     public function parent(): BelongsTo
     {
-        return $this->belongsTo(self::class);
+        return $this->belongsTo(self::class, 'parent_id');
     }
 
     public function children(): HasMany
     {
-        return $this->hasMany(self::class);
+        return $this->hasMany(self::class, 'parent_id');
     }
+
+
 }
