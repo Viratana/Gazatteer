@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('location_type_id');
             $table->foreignId('parent_id')->nullable()->constrained('locations', 'id')->cascadeOnDelete()->cascadeOnUpdate();
-            $table->string('code', 12);
+            $table->string('code', 12)->unique();
             $table->string('postal_code', 14)->nullable();
             $table->string('coordination')->nullable();
             $table->string('name_kh', 100);

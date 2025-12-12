@@ -78,6 +78,7 @@ class LocationNamesTable
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('name_kh')
                     ->label('NameKH')
+                    ->sortable()
                     ->searchable(),
                 TextColumn::make('name_en')
                     ->label('NameEN')

@@ -22,6 +22,7 @@ use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 
 class LocationsTable
 {
@@ -34,7 +35,8 @@ class LocationsTable
                     ->sortable()
                     ->searchable(),
                 TextColumn::make('parent.code')
-                    ->label('Parent Code'),
+                    ->label('Parent Code')
+                    ->alignment('center'),
                     // ->default(function(){
                     //     return 'Hello';
                     // }),
@@ -45,7 +47,9 @@ class LocationsTable
                 TextColumn::make('code')
                     ->label('Code')
                     ->alignment('center')
-                    ->sortable()
+                    ->sortable(query: function (Builder $query, string $direction): Builder {
+                        return $query->orderByRaw("CAST(code AS UNSIGNED) {$direction}");
+                    })
                     ->searchable(),
                 TextColumn::make('name_kh')
                     ->label('NameKH')
