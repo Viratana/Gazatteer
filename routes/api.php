@@ -11,6 +11,7 @@ Route::get('/user', function (Request $request) {
 
 Route::post("login",[UserController::class, 'login']);
 Route::post("register",[UserController::class,'register']);
+Route::get('/health', fn () => response()->json(['status' => 'ok']));
 
 Route::group(['middleware' => 'auth:sanctum'], function(){
     Route::apiResource('location', LocationController::class);
