@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
 use App\Models\LocationCode;
 use App\Models\Parent;
-use App\Models\\App\Models\Location;
+use App\Models\App\Models\Location;
 
 class LocationCodeFactory extends Factory
 {
