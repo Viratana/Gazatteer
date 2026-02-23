@@ -5,7 +5,7 @@ namespace Database\Factories;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
 use App\Models\Location;
-use App\Models\\App\Models\LocationType;
+use App\Models\App\Models\LocationType;
 
 class LocationFactory extends Factory
 {
