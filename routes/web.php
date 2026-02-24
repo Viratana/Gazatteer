@@ -12,7 +12,9 @@ Route::middleware('guest')->group(function (): void {
     Route::post('/register', [WebAuthController::class, 'register'])->name('register.store');
 });
 
+
+// --- USER ROUTES ---
 Route::middleware('auth')->group(function (): void {
-    Route::get('/dashboard', [WebAuthController::class, 'dashboard'])->name('dashboard');
+    Route::get('/user/dashboard', [WebAuthController::class, 'dashboard'])->name('dashboard');
     Route::post('/logout', [WebAuthController::class, 'logout'])->name('logout');
 });

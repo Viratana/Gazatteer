@@ -32,6 +32,7 @@ class WebAuthController extends Controller
         $credentials = [
             'email' => $validated['email'],
             'password' => $validated['password'],
+            'role' => 'user',
         ];
 
         if (! Auth::attempt($credentials, (bool) ($validated['remember'] ?? false))) {
