@@ -1,18 +1,8 @@
 <?php
 
-namespace App\Filament\Resources\Locations\Tables;
+namespace App\Filament\User\Resources\Locations\Tables;
 
-use App\Filament\Exports\LocationExporter;
 use App\Models\Location;
-use Filament\Actions\ActionGroup;
-use Filament\Actions\BulkActionGroup;
-use Filament\Actions\DeleteAction;
-use Filament\Actions\DeleteBulkAction;
-use Filament\Actions\EditAction;
-use Filament\Actions\ExportBulkAction;
-use Filament\Actions\ForceDeleteAction;
-use Filament\Actions\ForceDeleteBulkAction;
-use Filament\Actions\RestoreBulkAction;
 use Filament\Forms\Components\Select;
 use Filament\Schemas\Components\Group;
 use Filament\Tables\Columns\TextColumn;
@@ -49,12 +39,26 @@ class LocationsTable
                     })
                     ->searchable(),
 
-                TextColumn::make('name_kh')->label('NameKH')->searchable(),
-                TextColumn::make('name_en')->label('NameEN')->searchable(),
-                TextColumn::make('postal_code')->label('Postal Code')->searchable(),
-                TextColumn::make('coordination')->label('Coordination'),
-                TextColumn::make('reference')->label('Reference'),
-                TextColumn::make('note')->label('Note'),
+                TextColumn::make('name_kh')
+                    ->label('NameKH')
+                    ->searchable(),
+
+                TextColumn::make('name_en')
+                    ->label('NameEN')
+                    ->searchable(),
+
+                TextColumn::make('postal_code')
+                    ->label('Postal Code')
+                    ->searchable(),
+
+                TextColumn::make('coordination')
+                    ->label('Coordination'),
+
+                TextColumn::make('reference')
+                    ->label('Reference'),
+
+                TextColumn::make('note')
+                    ->label('Note'),
 
                 TextColumn::make('note_by_checker')
                     ->label('Note By Checker')
@@ -81,7 +85,7 @@ class LocationsTable
             ])
             ->filters([
                 Filter::make('location_hierarchy')
-                    ->label('')
+                    ->label('') // ✅ no big title
                     ->columnSpanFull()
                     ->form([
                         Group::make([
@@ -160,7 +164,7 @@ class LocationsTable
                                         ->pluck('name_kh', 'id');
                                 })
                                 ->disabled(fn ($get) => ! $get('commune_id')),
-                        ])->columns(4),
+                        ])->columns(4), // ✅ ONE ROW (Province | District | Commune | Village)
                     ])
                     ->query(function (Builder $query, array $data) {
                         return $query->where(function (Builder $query) use ($data) {
@@ -199,24 +203,7 @@ class LocationsTable
                 TrashedFilter::make()
                     ->columnSpanFull(),
             ])
-            ->filtersLayout(FiltersLayout::AboveContent)
-            ->recordActions([
-                ActionGroup::make([
-                    EditAction::make(),
-                    ForceDeleteAction::make(),
-                    DeleteAction::make(),
-                ]),
-            ])
-            ->toolbarActions([
-                BulkActionGroup::make([
-                    DeleteBulkAction::make(),
-                    ForceDeleteBulkAction::make(),
-                    RestoreBulkAction::make(),
-                ]),
-                ExportBulkAction::make()
-                    ->exporter(LocationExporter::class)
-                    ->label('Export Selected')
-                    ->color('danger'),
-            ]);
+            ->filtersLayout(FiltersLayout::AboveContent);
+            // ->deferFilters(false);
     }
 }

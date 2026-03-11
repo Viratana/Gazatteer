@@ -3,24 +3,24 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
-use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
 
-class WebAuthController extends Controller
+class AdminAuthController extends Controller
 {
+    /**
+     * Display the admin login view.
+     */
     public function showLogin(): View
     {
-        return view('auth.login');
+        return view('admin.login');
     }
 
-    public function showRegister(): View
-    {
-        return view('auth.register');
-    }
-
+    /**
+     * Handle an incoming admin authentication request.
+     */
     public function login(Request $request): RedirectResponse
     {
         $validated = $request->validate([
@@ -32,39 +32,23 @@ class WebAuthController extends Controller
         $credentials = [
             'email' => $validated['email'],
             'password' => $validated['password'],
-            'role' => 'user',
+            'role' => 'admin', 
         ];
 
         if (! Auth::attempt($credentials, (bool) ($validated['remember'] ?? false))) {
             return back()
-                ->withErrors(['email' => 'The provided credentials are incorrect.'])
+                ->withErrors(['email' => 'These credentials do not match our admin records.'])
                 ->onlyInput('email');
         }
 
         $request->session()->regenerate();
 
-        return redirect()->intended('/user');
+        return redirect()->intended(route('admin.dashboard'));
     }
 
-    public function register(Request $request): RedirectResponse
-    {
-        $validated = $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'email', 'max:255', 'unique:users,email'],
-            'password' => ['required', 'string', 'min:8', 'confirmed'],
-        ]);
-
-        User::create([
-            'name' => $validated['name'],
-            'email' => $validated['email'],
-            'password' => $validated['password'],
-        ]);
-
-        return redirect()
-            ->route('login')
-            ->with('status', 'Account created successfully. Please sign in.');
-    }
-
+    /**
+     * Destroy an authenticated admin session.
+     */
     public function logout(Request $request): RedirectResponse
     {
         Auth::logout();
@@ -72,6 +56,6 @@ class WebAuthController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect()->route('login');
+        return redirect()->route('admin.login');
     }
 }

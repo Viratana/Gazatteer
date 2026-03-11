@@ -21,6 +21,7 @@ class CreateLocation extends CreateRecord
 
         return $data;
     }
+    
 
     // protected function handleRecordCreation(array $data): Model
     // {

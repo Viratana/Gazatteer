@@ -1,56 +1,50 @@
 <?php
 
-namespace App\Filament\Resources\LocationCodes\Tables;
+namespace App\Filament\User\Resources\LocationNames\Tables;
 
-use Filament\Actions\ActionGroup;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ForceDeleteBulkAction;
 use Filament\Actions\RestoreBulkAction;
-use Filament\Actions\ViewAction;
-use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Table;
 
-class LocationCodesTable
+class LocationNamesTable
 {
     public static function configure(Table $table): Table
     {
         return $table
             ->columns([
-                TextColumn::make('locationType.name')
+                TextColumn::make('location.locationType.name')
                     ->label('Location Type')
                     ->sortable()
                     ->searchable(),
                 TextColumn::make('parent.code')
                     ->label('Parent Code')
-                    ->alignment('center'),
+                    ->toggleable(isToggledHiddenByDefault: true),
                     // ->default(function(){
                     //     return 'Hello';
                     // }),
                 TextColumn::make('parent.name_kh')
                     ->label('Parent Name')
                     // ->default('—')
-                    ->searchable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('code')
+                    ->searchable(),
+                TextColumn::make('Location.code')
                     ->label('Code')
                     ->alignment('center')
-                    ->sortable()
-                    ->searchable(),
+                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('name_kh')
                     ->label('NameKH')
-                    ->searchable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->sortable()
+                    ->searchable(),
                 TextColumn::make('name_en')
                     ->label('NameEN')
-                    ->searchable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->searchable(),
                 TextColumn::make('postal_code')
                     ->label('Postal Code')
-                    ->searchable(),
+                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('coordination')
                     ->label('Coordination'),
                 TextColumn::make('reference')
@@ -74,19 +68,6 @@ class LocationCodesTable
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-            ])
-            ->filters([
-                TrashedFilter::make(),
-            ])
-            ->recordActions([
-                ViewAction::make(),
-            ])
-            ->toolbarActions([
-                BulkActionGroup::make([
-                    DeleteBulkAction::make(),
-                    ForceDeleteBulkAction::make(),
-                    RestoreBulkAction::make(),
-                ]),
             ]);
     }
 }

@@ -2,10 +2,12 @@
 
 namespace App\Filament\Resources\LocationNames\Pages;
 
+use App\Filament\Exports\LocationExporter;
 use App\Filament\Resources\LocationNames\LocationNameResource;
 use App\Models\LocationName;
 use App\Models\LocationType;
 use Filament\Actions\CreateAction;
+use Filament\Actions\ExportAction;
 use Filament\Actions\ViewAction;
 use Filament\Schemas\Components\Tabs\Tab as TabsTab;
 use Filament\Resources\Pages\ListRecords;
@@ -23,6 +25,11 @@ class ListLocationNames extends ListRecords
     {
         return [
             // CreateAction::make(),
+            ExportAction::make()
+                ->exporter(LocationExporter::class)
+                ->icon('heroicon-o-arrow-down-tray')
+                ->label('Export')
+                ->color('danger'),
         ];
     }
 
