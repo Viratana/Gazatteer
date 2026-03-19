@@ -4,6 +4,7 @@ namespace App\Filament\Resources\Locations\Tables;
 
 use App\Filament\Exports\LocationExporter;
 use App\Models\Location;
+use Filament\Actions\Action;
 use Filament\Actions\ActionGroup;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
@@ -92,7 +93,6 @@ class LocationsTable
                                 ->preload()
                                 ->options(fn () => Location::query()
                                     ->where('location_type_id', 1)
-                                    ->orderBy('name_kh')
                                     ->pluck('name_kh', 'id'))
                                 ->live()
                                 ->afterStateUpdated(function ($set) {
@@ -113,7 +113,6 @@ class LocationsTable
                                     return Location::query()
                                         ->where('location_type_id', 2)
                                         ->where('parent_id', $provinceId)
-                                        ->orderBy('name_kh')
                                         ->pluck('name_kh', 'id');
                                 })
                                 ->disabled(fn ($get) => ! $get('province_id'))
@@ -135,7 +134,6 @@ class LocationsTable
                                     return Location::query()
                                         ->where('location_type_id', 3)
                                         ->where('parent_id', $districtId)
-                                        ->orderBy('name_kh')
                                         ->pluck('name_kh', 'id');
                                 })
                                 ->disabled(fn ($get) => ! $get('district_id'))
@@ -156,7 +154,6 @@ class LocationsTable
                                     return Location::query()
                                         ->where('location_type_id', 4)
                                         ->where('parent_id', $communeId)
-                                        ->orderBy('name_kh')
                                         ->pluck('name_kh', 'id');
                                 })
                                 ->disabled(fn ($get) => ! $get('commune_id')),
@@ -203,6 +200,13 @@ class LocationsTable
             ->recordActions([
                 ActionGroup::make([
                     EditAction::make(),
+
+                Action::make('leaflet_map')
+                    ->label('Leaflet Map')
+                    ->icon('heroicon-o-map')
+                    ->color('info')
+                    ->url(fn ($record) => url('/map?focus=' . $record->id), shouldOpenInNewTab: true),
+
                     ForceDeleteAction::make(),
                     DeleteAction::make(),
                 ]),
