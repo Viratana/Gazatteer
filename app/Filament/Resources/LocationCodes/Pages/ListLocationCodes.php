@@ -2,10 +2,12 @@
 
 namespace App\Filament\Resources\LocationCodes\Pages;
 
+use App\Filament\Exports\LocationExporter;
 use App\Filament\Resources\LocationCodes\LocationCodeResource;
 use App\Models\LocationCode;   // <-- base model for the resource
 use App\Models\LocationType;
 use Filament\Actions\CreateAction;
+use Filament\Actions\ExportAction;
 use Filament\Schemas\Components\Tabs\Tab as TabsTab;
 use Filament\Resources\Pages\ListRecords;
 use Illuminate\Database\Eloquent\Builder;
@@ -19,6 +21,11 @@ class ListLocationCodes extends ListRecords
     {
         return [
             // CreateAction::make(),
+            ExportAction::make()
+                ->exporter(LocationExporter::class)
+                ->icon('heroicon-o-arrow-down-tray')
+                ->label('Export')
+                ->color('danger'),
         ];
     }
 

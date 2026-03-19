@@ -32,6 +32,7 @@ class WebAuthController extends Controller
         $credentials = [
             'email' => $validated['email'],
             'password' => $validated['password'],
+            'role' => 'user',
         ];
 
         if (! Auth::attempt($credentials, (bool) ($validated['remember'] ?? false))) {
@@ -42,7 +43,7 @@ class WebAuthController extends Controller
 
         $request->session()->regenerate();
 
-        return redirect()->intended(route('dashboard'));
+        return redirect()->intended('/user');
     }
 
     public function register(Request $request): RedirectResponse
@@ -62,13 +63,6 @@ class WebAuthController extends Controller
         return redirect()
             ->route('login')
             ->with('status', 'Account created successfully. Please sign in.');
-    }
-
-    public function dashboard(Request $request): View
-    {
-        return view('dashboard', [
-            'user' => $request->user(),
-        ]);
     }
 
     public function logout(Request $request): RedirectResponse

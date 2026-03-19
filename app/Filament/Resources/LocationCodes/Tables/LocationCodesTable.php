@@ -20,7 +20,7 @@ class LocationCodesTable
     {
         return $table
             ->columns([
-                 TextColumn::make('locationType.name')
+                TextColumn::make('locationType.name')
                     ->label('Location Type')
                     ->sortable()
                     ->searchable(),

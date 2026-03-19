@@ -58,7 +58,7 @@ class LocationNamesTable
                 //     ->dateTime()
                 //     ->sortable()
                 //     ->toggleable(isToggledHiddenByDefault: true),
-                 TextColumn::make('location.locationType.name')
+                TextColumn::make('location.locationType.name')
                     ->label('Location Type')
                     ->sortable()
                     ->searchable(),
